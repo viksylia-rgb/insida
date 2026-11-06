@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 /** Централизованные настройки приложения из переменных окружения. */
 export const config = {
   get siteUrl() {
@@ -15,7 +16,13 @@ export const config = {
 };
 
 export function requireSecret(name: "AUTH_SECRET"): string {
-  const v = process.env[name];
+  let v = process.env[name];
+  // Если AUTH_SECRET не задан, секрет выводится из (секретной) строки подключения к базе.
+  // Это упрощает первую публикацию; для надёжности позже задайте AUTH_SECRET отдельно
+  // (после смены секрета выпустите новые коды восстановления в админке).
+  if (!v && process.env.DATABASE_URL) {
+    v = createHash("sha256").update(`insida-auth:${process.env.DATABASE_URL}`).digest("base64url");
+  }
   if (!v || v.length < 32) {
     throw new Error(`Переменная окружения ${name} не задана или слишком короткая. См. .env.example`);
   }
