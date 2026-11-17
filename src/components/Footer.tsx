@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getSettings } from "@/server/services/content";
+import { content } from "@/lib/content";
 
-export async function Footer() {
-  const s = await getSettings().catch(() => null);
+export function Footer() {
+  const s = content().settings;
   const year = new Date().getFullYear();
   return (
     <footer className="site-footer">
@@ -33,7 +33,7 @@ export async function Footer() {
               <li><Link href="/faq">Вопросы и ответы</Link></li>
               <li><Link href="/contacts">Контакты</Link></li>
               <li><Link href="/search">Поиск</Link></li>
-              {s?.socialLinks.map((l) => <li key={l.url}><a href={l.url} target="_blank" rel="noopener noreferrer">{l.title} ↗</a></li>)}
+              {s.socialLinks.map((l) => <li key={l.url}><a href={l.url} target="_blank" rel="noopener noreferrer">{l.title} ↗</a></li>)}
             </ul>
           </div>
           <div>

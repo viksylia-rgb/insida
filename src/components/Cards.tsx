@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ArticleCard } from "@/server/services/content";
+import type { ArticleCard } from "@/lib/content";
 import { Visual } from "./Visual";
 import { DemoBadge } from "./Notices";
 import { KIND_LABELS, minutes } from "@/lib/format";
@@ -7,7 +7,7 @@ import { KIND_LABELS, minutes } from "@/lib/format";
 export function ArticleCardView({ a, withImage = true, priority }: { a: ArticleCard; withImage?: boolean; priority?: boolean }) {
   return (
     <article className={`card ${withImage ? "card--media" : ""}`}>
-      {withImage && <Visual src={a.coverImage} alt={a.coverAlt ?? ""} seed={a.slug} priority={priority} label={a.coverImage ? false : undefined} />}
+      {withImage && <Visual src={a.cover} alt={a.coverAlt ?? ""} seed={a.slug} priority={priority} label={a.cover ? false : undefined} />}
       <div className="card__body">
         <div className="card__meta">
           <span>{KIND_LABELS[a.kind]}</span>
@@ -16,7 +16,7 @@ export function ArticleCardView({ a, withImage = true, priority }: { a: ArticleC
         </div>
         <h3 className="card__title"><Link href={`/library/${a.slug}`}>{a.title}</Link></h3>
         {a.excerpt && <p className="card__excerpt">{a.excerpt}</p>}
-        {a.isDemo && <div className="card__foot"><DemoBadge /></div>}
+        {a.demo && <div className="card__foot"><DemoBadge /></div>}
       </div>
     </article>
   );

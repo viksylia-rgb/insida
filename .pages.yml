@@ -1,0 +1,382 @@
+# Настройки визуального редактора Pages CMS (https://app.pagescms.org).
+# Вход — через ваш аккаунт GitHub. Каждое сохранение — это изменение в репозитории,
+# после которого сайт пересобирается и обновляется сам (2–4 минуты).
+
+media:
+  - name: images
+    label: Изображения
+    input: public/images/uploads
+    output: /images/uploads
+    extensions: [jpg, jpeg, png, webp, avif, svg]
+  - name: files
+    label: Файлы (PDF)
+    input: public/files
+    output: /files
+    extensions: [pdf]
+
+content:
+  # ---------------- СТАТЬИ ----------------
+  - name: articles
+    label: Статьи и термины
+    type: collection
+    path: content/articles
+    format: yaml-frontmatter
+    filename: "{fields.slug}.md"
+    view:
+      fields: [title, kind, published, demo]
+      primary: title
+      sort: [date, title]
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: "Заголовок", type: string, required: true }
+      - name: kind
+        label: Формат
+        type: select
+        default: article
+        options:
+          values:
+            - { name: article, label: Статья }
+            - { name: term, label: Объяснение термина }
+            - { name: collection, label: Подборка }
+      - name: topic
+        label: Тема
+        type: select
+        description: "Адрес темы из раздела «Темы»"
+        options:
+          values:
+            - { name: otnosheniya, label: Отношения }
+            - { name: samoocenka, label: Самооценка }
+            - { name: trevoga-i-emocii, label: Тревога и эмоции }
+            - { name: rabota-i-ucheba, label: Работа и учёба }
+            - { name: vybor-i-poisk-sebya, label: Выбор и поиск себя }
+      - { name: tags, label: "Теги", type: string, list: true, description: "Например: границы, тревога" }
+      - { name: excerpt, label: "Краткое описание (лид)", type: text }
+      - { name: cover, label: "Обложка", type: image, options: { media: images } }
+      - { name: coverAlt, label: "Описание обложки (для незрячих)", type: string }
+      - { name: author, label: "Автор", type: string }
+      - { name: date, label: "Дата публикации", type: date }
+      - { name: updated, label: "Дата обновления", type: date }
+      - name: review
+        label: Редакторская проверка
+        type: select
+        default: not_reviewed
+        options:
+          values:
+            - { name: not_reviewed, label: Не проверено }
+            - { name: in_review, label: На проверке }
+            - { name: reviewed, label: Проверено редактором }
+      - { name: reviewedBy, label: "Кто проверил", type: string }
+      - name: sources
+        label: Источники (только реальные!)
+        type: object
+        list: true
+        fields:
+          - { name: title, label: "Описание источника", type: string }
+          - { name: url, label: "Ссылка (необязательно)", type: string }
+          - { name: note, label: "Примечание", type: string }
+      - { name: featured, label: "Показывать в «Выборе редакции» на главной", type: boolean }
+      - { name: sensitive, label: "Чувствительная тема (покажет мягкую рекомендацию обратиться за помощью)", type: boolean }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+      - { name: slug, label: "Адрес страницы (латиницей через дефис)", type: string, required: true, hidden: false, description: "Например: lichnye-granitsy. Задаётся один раз при создании." }
+      - { name: seoTitle, label: "SEO-заголовок", type: string }
+      - { name: seoDescription, label: "SEO-описание", type: text }
+      - { name: body, label: "Текст", type: rich-text, options: { format: markdown, media: images } }
+
+  # ---------------- ТЕСТЫ ----------------
+  - name: tests
+    label: Тесты
+    type: collection
+    path: content/tests
+    format: json
+    filename: "{fields.slug}.json"
+    view: { fields: [title, published, demo], primary: title }
+    fields:
+      - { name: title, label: "Название", type: string, required: true }
+      - { name: slug, label: "Адрес (латиницей)", type: string, required: true }
+      - { name: excerpt, label: "Краткое описание", type: text }
+      - { name: intro, label: "Вступление", type: rich-text, options: { format: markdown } }
+      - { name: topic, label: "Тема (адрес темы)", type: string }
+      - { name: duration, label: "Длительность, минут", type: number, default: 5 }
+      - { name: cover, label: "Обложка", type: image, options: { media: images } }
+      - name: scales
+        label: Шкалы (что измеряем)
+        type: object
+        list: true
+        fields:
+          - { name: key, label: "Ключ (латиницей, например self)", type: string }
+          - { name: title, label: "Название для читателя", type: string }
+      - name: questions
+        label: Вопросы
+        type: object
+        list: true
+        fields:
+          - { name: text, label: "Вопрос", type: text }
+          - name: type
+            label: Тип
+            type: select
+            default: scale
+            options:
+              values:
+                - { name: scale, label: Шкала (один ответ) }
+                - { name: single, label: Один вариант }
+                - { name: multiple, label: Несколько вариантов }
+          - { name: hint, label: "Подсказка", type: string }
+          - name: options
+            label: Варианты ответа
+            type: object
+            list: true
+            fields:
+              - { name: label, label: "Текст варианта", type: string }
+              - name: scores
+                label: Баллы
+                type: object
+                list: true
+                fields:
+                  - { name: scale, label: "Ключ шкалы", type: string }
+                  - { name: points, label: "Баллы", type: number }
+              - { name: jumpTo, label: "Перейти к вопросу № (для ветвления)", type: number }
+      - name: results
+        label: Правила результатов
+        type: object
+        list: true
+        fields:
+          - { name: scale, label: "Ключ шкалы", type: string }
+          - { name: from, label: "От (балл включительно)", type: number }
+          - { name: to, label: "До (балл включительно)", type: number }
+          - { name: title, label: "Заголовок результата", type: string }
+          - { name: description, label: "Описание (бережно, без диагнозов)", type: text }
+          - { name: recommendations, label: "Что можно попробовать", type: text }
+          - { name: links, label: "Ссылки (library/адрес, practices/адрес)", type: string, list: true }
+      - { name: methodNote, label: "Как устроен опросник", type: text }
+      - name: sources
+        label: Источники
+        type: object
+        list: true
+        fields:
+          - { name: title, label: "Описание", type: string }
+          - { name: url, label: "Ссылка", type: string }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+      - { name: date, label: "Дата", type: date }
+
+  # ---------------- ПРАКТИКИ ----------------
+  - name: practices
+    label: Практики
+    type: collection
+    path: content/practices
+    format: yaml-frontmatter
+    filename: "{fields.slug}.md"
+    view: { fields: [title, kind, published], primary: title }
+    fields:
+      - { name: title, label: "Название", type: string, required: true }
+      - { name: slug, label: "Адрес (латиницей)", type: string, required: true }
+      - name: kind
+        label: Формат
+        type: select
+        default: exercise
+        options:
+          values:
+            - { name: exercise, label: Упражнение }
+            - { name: journal, label: Дневник }
+            - { name: reflection, label: Рефлексивное задание }
+      - { name: topic, label: "Тема (адрес темы)", type: string }
+      - { name: excerpt, label: "Краткое описание", type: text }
+      - { name: duration, label: "Длительность, минут", type: number, default: 10 }
+      - { name: cover, label: "Обложка", type: image, options: { media: images } }
+      - name: fields
+        label: Поля для ответов читателя
+        type: object
+        list: true
+        fields:
+          - { name: id, label: "Код поля (латиницей)", type: string }
+          - { name: label, label: "Вопрос", type: string }
+          - name: type
+            label: Тип поля
+            type: select
+            default: textarea
+            options:
+              values:
+                - { name: textarea, label: Длинный ответ }
+                - { name: text, label: Короткий ответ }
+                - { name: scale, label: Шкала-ползунок }
+          - { name: help, label: "Подсказка", type: string }
+          - { name: min, label: "Минимум (для шкалы)", type: number }
+          - { name: max, label: "Максимум (для шкалы)", type: number }
+      - { name: sensitive, label: "Чувствительная тема", type: boolean }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+      - { name: date, label: "Дата", type: date }
+      - { name: body, label: "Инструкция", type: rich-text, options: { format: markdown, media: images } }
+
+  # ---------------- ПРОГРАММЫ ----------------
+  - name: programs
+    label: Программы
+    type: collection
+    path: content/programs
+    format: json
+    filename: "{fields.slug}.json"
+    view: { fields: [title, published], primary: title }
+    fields:
+      - { name: title, label: "Название", type: string, required: true }
+      - { name: slug, label: "Адрес (латиницей)", type: string, required: true }
+      - { name: excerpt, label: "Краткое описание", type: text }
+      - { name: description, label: "Описание", type: rich-text, options: { format: markdown } }
+      - { name: topic, label: "Тема (адрес темы)", type: string }
+      - { name: cover, label: "Обложка", type: image, options: { media: images } }
+      - name: modules
+        label: Модули
+        type: object
+        list: true
+        fields:
+          - { name: title, label: "Название модуля", type: string }
+          - { name: description, label: "Описание", type: text }
+          - name: lessons
+            label: Уроки
+            type: object
+            list: true
+            fields:
+              - { name: title, label: "Название урока", type: string }
+              - { name: slug, label: "Адрес урока (латиницей)", type: string }
+              - { name: duration, label: "Длительность, минут", type: number }
+              - { name: body, label: "Текст урока", type: rich-text, options: { format: markdown } }
+              - { name: assignment, label: "Задание", type: text }
+              - { name: practice, label: "Связанная практика (адрес)", type: string }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+      - { name: date, label: "Дата", type: date }
+
+  # ---------------- КНИГИ ----------------
+  - name: books
+    label: Книжная полка
+    type: collection
+    path: content/books
+    format: json
+    filename: "{fields.slug}.json"
+    view: { fields: [title, authors, published], primary: title }
+    fields:
+      - { name: title, label: "Название книги", type: string, required: true }
+      - { name: slug, label: "Адрес (латиницей)", type: string, required: true }
+      - { name: authors, label: "Авторы", type: string }
+      - { name: year, label: "Год", type: number }
+      - { name: publisher, label: "Издательство", type: string }
+      - { name: isbn, label: "ISBN", type: string }
+      - { name: annotation, label: "Наша аннотация (своими словами)", type: text }
+      - { name: whyRead, label: "Зачем читать", type: text }
+      - { name: link, label: "Ссылка на библиографические сведения", type: string }
+      - { name: cover, label: "Обложка (только с правами)", type: image, options: { media: images } }
+      - { name: topic, label: "Тема (адрес темы)", type: string }
+      - { name: featured, label: "Показывать на главной", type: boolean }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+
+  # ---------------- ГАЙДЫ ----------------
+  - name: guides
+    label: Гайды и рабочие тетради
+    type: collection
+    path: content/guides
+    format: yaml-frontmatter
+    filename: "{fields.slug}.md"
+    view: { fields: [title, access, status, published], primary: title }
+    fields:
+      - { name: title, label: "Название", type: string, required: true }
+      - { name: slug, label: "Адрес (латиницей)", type: string, required: true }
+      - { name: excerpt, label: "Краткое описание", type: text }
+      - { name: contents, label: "Состав", type: string, list: true }
+      - { name: format, label: "Формат", type: string, default: PDF }
+      - { name: author, label: "Автор", type: string }
+      - name: access
+        label: Доступ
+        type: select
+        default: free
+        options:
+          values:
+            - { name: free, label: Бесплатный }
+            - { name: paid, label: Платный }
+      - name: status
+        label: Статус
+        type: select
+        default: coming_soon
+        options:
+          values:
+            - { name: coming_soon, label: Скоро }
+            - { name: available, label: Доступен / в продаже }
+            - { name: archived, label: Скрыт }
+      - { name: price, label: "Цена, ₽", type: number }
+      - { name: buyUrl, label: "Ссылка для покупки у продавца (VK, Telegram)", type: string }
+      - { name: file, label: "Файл для бесплатного скачивания", type: file, options: { media: files } }
+      - { name: cover, label: "Обложка", type: image, options: { media: images } }
+      - { name: topic, label: "Тема (адрес темы)", type: string }
+      - { name: demo, label: "Демонстрационный материал", type: boolean }
+      - { name: published, label: "Опубликовано", type: boolean, default: true }
+      - { name: body, label: "Подробное описание", type: rich-text, options: { format: markdown } }
+
+  # ---------------- СТРАНИЦЫ И ДОКУМЕНТЫ ----------------
+  - name: pages
+    label: Страницы и документы
+    type: collection
+    path: content/pages
+    format: yaml-frontmatter
+    view: { fields: [title], primary: title }
+    fields:
+      - { name: title, label: "Заголовок", type: string }
+      - { name: legalTemplate, label: "Шаблон — требует проверки юристом", type: boolean }
+      - { name: body, label: "Текст", type: rich-text, options: { format: markdown } }
+
+  # ---------------- ОТДЕЛЬНЫЕ ФАЙЛЫ ----------------
+  - name: settings
+    label: Настройки сайта
+    type: file
+    path: content/settings.json
+    format: json
+    fields:
+      - { name: heroTitle, label: "Заголовок главной (часть после « — » будет курсивом)", type: string }
+      - { name: heroLead, label: "Подзаголовок главной", type: text }
+      - { name: heroImage, label: "Фото на главной", type: image, options: { media: images } }
+      - { name: founderName, label: "Имя основателя", type: string }
+      - { name: founderRole, label: "Роль", type: string }
+      - { name: founderPhoto, label: "Фото основателя", type: image, options: { media: images } }
+      - { name: founderPhotoAlt, label: "Описание фото", type: string }
+      - { name: founderStory, label: "История основателя", type: rich-text, options: { format: markdown } }
+      - { name: education, label: "Образование", type: text }
+      - { name: mission, label: "Миссия", type: text }
+      - name: socialLinks
+        label: Соцсети
+        type: object
+        list: true
+        fields:
+          - { name: title, label: "Название", type: string }
+          - { name: url, label: "Ссылка (https://…)", type: string }
+      - { name: contactEmail, label: "E-mail для связи (необязательно)", type: string }
+      - { name: crisisText, label: "Рекомендация для чувствительных тем", type: text }
+      - { name: sellerInfo, label: "Сведения о продавце (реальные реквизиты после проверки юристом)", type: text }
+
+  - name: topics
+    label: Темы
+    type: file
+    path: content/topics.json
+    format: json
+    fields:
+      - name: topics
+        label: Темы
+        type: object
+        list: true
+        fields:
+          - { name: slug, label: "Адрес (латиницей)", type: string }
+          - { name: title, label: "Название", type: string }
+          - { name: concern, label: "Формулировка «Что тебя волнует?»", type: string }
+          - { name: description, label: "Описание", type: text }
+
+  - name: faq
+    label: Вопросы и ответы
+    type: file
+    path: content/faq.json
+    format: json
+    fields:
+      - name: items
+        label: Вопросы
+        type: object
+        list: true
+        fields:
+          - { name: question, label: "Вопрос", type: string }
+          - { name: answer, label: "Ответ", type: text }

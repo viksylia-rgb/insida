@@ -1,29 +1,26 @@
 import Link from "next/link";
-import { featuredArticles, getSettings, listArticles, listBooks, listPractices, listTopics, listTests } from "@/server/services/content";
+import { content, toCard } from "@/lib/content";
 import { ArticleCardView, SimpleCard } from "@/components/Cards";
 import { Visual } from "@/components/Visual";
 import { DemoBadge, Disclaimer } from "@/components/Notices";
-import { KIND_LABELS, minutes } from "@/lib/format";
-import { config } from "@/lib/config";
+import { KIND_LABELS, minutes, plural } from "@/lib/format";
+import { SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
 
-export const revalidate = 300;
-
-export default async function Home() {
-  const [settings, featured, latest, topics, practices, books, tests] = await Promise.all([
-    getSettings(),
-    featuredArticles(4),
-    listArticles({ limit: 6 }),
-    listTopics(),
-    listPractices(),
-    listBooks({ featuredOnly: true, limit: 4 }),
-    listTests(),
-  ]);
+export default function Home() {
+  const c = content();
+  const settings = c.settings;
+  const featured = c.articles.filter((a) => a.featured).slice(0, 3).map(toCard);
+  const latest = { items: c.articles.slice(0, 6) };
+  const topics = c.topics;
+  const practices = c.practices;
+  const books = c.books.filter((b) => b.featured).slice(0, 4);
+  const tests = c.tests;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "INSIDA",
-    url: config.siteUrl,
-    description: config.siteDescription,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
   };
   const formats = [
     { n: "01", href: "/library", title: "Библиотека", text: "Статьи, объяснения терминов и подборки — с источниками." },
@@ -64,7 +61,7 @@ export default async function Home() {
             <Link href="/library" className="link-arrow">Все материалы</Link>
           </div>
           <div className="editorial">
-            {featured.slice(0, 3).map((a, i) => <ArticleCardView key={a.id} a={a} priority={i === 0} />)}
+            {featured.map((a, i) => <ArticleCardView key={a.slug} a={a} priority={i === 0} />)}
           </div>
         </section>
       )}
@@ -80,7 +77,7 @@ export default async function Home() {
             </div>
             <div className="concerns">
               {topics.map((t) => (
-                <Link key={t.id} href={`/topics/${t.slug}`} className="chip">{t.concern ?? t.title}</Link>
+                <Link key={t.slug} href={`/topics/${t.slug}`} className="chip">{t.concern ?? t.title}</Link>
               ))}
             </div>
           </div>
@@ -92,7 +89,7 @@ export default async function Home() {
         <div className="section-head"><div><p className="eyebrow">Темы</p><h2 id="topics-h">О чём мы пишем</h2></div></div>
         <div className="topic-grid">
           {topics.map((t, i) => (
-            <div key={t.id} className="topic-tile">
+            <div key={t.slug} className="topic-tile">
               <span className="topic-tile__n">{String(i + 1).padStart(2, "0")}</span>
               <h3><Link href={`/topics/${t.slug}`}>{t.title}</Link></h3>
               {t.description && <p>{t.description}</p>}
@@ -124,13 +121,13 @@ export default async function Home() {
         </div>
         <div>
           {latest.items.map((a, i) => (
-            <div key={a.id} className="row-item">
+            <div key={a.slug} className="row-item">
               <span className="row-item__num">{String(i + 1).padStart(2, "0")}</span>
               <div>
                 <h3 className="row-item__title"><Link href={`/library/${a.slug}`}>{a.title}</Link></h3>
                 <p className="muted small" style={{ margin: 0 }}>{a.excerpt}</p>
               </div>
-              <span className="caption">{KIND_LABELS[a.kind]} · {minutes(a.readingMinutes)}{a.isDemo ? " · демо" : ""}</span>
+              <span className="caption">{KIND_LABELS[a.kind]} · {minutes(a.readingMinutes)}{a.demo ? " · демо" : ""}</span>
             </div>
           ))}
         </div>
@@ -145,10 +142,10 @@ export default async function Home() {
           </div>
           <div className="grid grid--3">
             {practices.slice(0, 2).map((p) => (
-              <SimpleCard key={p.id} href={`/practices/${p.slug}`} title={p.title} excerpt={p.excerpt} meta={[KIND_LABELS[p.kind], minutes(p.durationMinutes)]} isDemo={p.isDemo} seed={p.slug} cover={p.coverImage} cta="Начать" />
+              <SimpleCard key={p.slug} href={`/practices/${p.slug}`} title={p.title} excerpt={p.excerpt} meta={[KIND_LABELS[p.kind], minutes(p.duration)]} isDemo={p.demo} seed={p.slug} cover={p.cover} cta="Начать" />
             ))}
             {tests.slice(0, 1).map((t) => (
-              <SimpleCard key={t.id} href={`/tests/${t.slug}`} title={t.title} excerpt={t.excerpt} meta={["Тест", `${t.questionCount} вопросов`, minutes(t.durationMinutes)]} isDemo={t.isDemo} seed={t.slug} cover={t.coverImage} cta="Пройти" />
+              <SimpleCard key={t.slug} href={`/tests/${t.slug}`} title={t.title} excerpt={t.excerpt} meta={["Тест", `${t.questions.length} ${plural(t.questions.length, ["вопрос", "вопроса", "вопросов"])}`, minutes(t.duration)]} isDemo={t.demo} seed={t.slug} cover={t.cover} cta="Пройти" />
             ))}
           </div>
         </div>
@@ -162,12 +159,12 @@ export default async function Home() {
             <Link href="/books" className="link-arrow">Вся полка</Link>
           </div>
           <div className="grid grid--4">
-            {books.map(({ book }) => (
-              <article key={book.id} className="card">
-                <Visual src={book.coverImage} seed={book.slug} ratio="3 / 4" label={book.coverImage ? false : "Обложка · заменить"} />
+            {books.map((book) => (
+              <article key={book.slug} className="card">
+                <Visual src={book.cover} seed={book.slug} ratio="3 / 4" label={book.cover ? false : "Обложка · заменить"} />
                 <p className="caption" style={{ margin: 0 }}>{book.authors}{book.year ? `, ${book.year}` : ""}</p>
                 <h3 className="card__title"><Link href={`/books#${book.slug}`}>{book.title}</Link></h3>
-                {book.isDemo && <DemoBadge />}
+                {book.demo && <DemoBadge />}
               </article>
             ))}
           </div>
@@ -183,7 +180,7 @@ export default async function Home() {
             <h2 id="about-h" className="sr-only">Об INSIDA</h2>
             <p className="quote">Психология без громких обещаний: бережно, доказательно и по-человечески.</p>
             <p className="lead">{settings.mission || "INSIDA — авторский проект. Мы переводим исследования на понятный язык, предлагаем вопросы для размышления и не обещаем мгновенных изменений."}</p>
-            <p className="small" style={{ color: "var(--inverse-text-2)" }}>{settings.founderName.startsWith("[") ? "" : `${settings.founderName} — основатель INSIDA`}</p>
+            <p className="small" style={{ color: "var(--inverse-text-2)" }}>{settings.founderName ? `${settings.founderName} — основатель INSIDA` : ""}</p>
             <Link href="/about" className="link-arrow">Подробнее о проекте</Link>
           </div>
         </div>

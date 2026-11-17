@@ -1,5 +1,6 @@
 import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
+import { asset } from "./site";
 
 marked.setOptions({ gfm: true, breaks: false });
 
@@ -28,10 +29,12 @@ export function renderMarkdown(src: string): string {
         const external = /^https?:\/\//.test(attribs.href ?? "");
         return {
           tagName,
-          attribs: external ? { ...attribs, rel: "noopener noreferrer nofollow", target: "_blank" } : attribs,
+          attribs: external
+            ? { ...attribs, rel: "noopener noreferrer nofollow", target: "_blank" }
+            : { ...attribs, href: attribs.href?.startsWith("/") ? asset(attribs.href)! : attribs.href },
         };
       },
-      img: (tagName, attribs) => ({ tagName, attribs: { ...attribs, loading: "lazy" } }),
+      img: (tagName, attribs) => ({ tagName, attribs: { ...attribs, src: asset(attribs.src) ?? "", loading: "lazy" } }),
       h1: "h2",
     },
   });

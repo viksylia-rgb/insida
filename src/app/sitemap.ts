@@ -1,21 +1,20 @@
 import type { MetadataRoute } from "next";
-import { sitemapEntries } from "@/server/services/content";
-import { config } from "@/lib/config";
+import { content } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 3600;
+export const dynamic = "force-static";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = config.siteUrl;
-  const e = await sitemapEntries();
-  const fixed = ["", "/library", "/tests", "/practices", "/programs", "/guides", "/books", "/about", "/faq", "/contacts"].map((p) => ({ url: `${base}${p}`, changeFrequency: "weekly" as const, priority: p ? 0.7 : 1 }));
-  const map = (prefix: string, rows: { slug: string; updatedAt: Date }[]) => rows.map((r) => ({ url: `${base}${prefix}${r.slug}`, lastModified: r.updatedAt }));
+export default function sitemap(): MetadataRoute.Sitemap {
+  const c = content();
+  const u = (p: string) => `${SITE_URL}${p}/`;
   return [
-    ...fixed,
-    ...map("/library/", e.articles),
-    ...map("/tests/", e.tests),
-    ...map("/practices/", e.practices),
-    ...map("/programs/", e.programs),
-    ...map("/topics/", e.topics),
-    ...map("/", e.pages.filter((p) => p.slug.startsWith("legal/"))),
+    ...["", "/library", "/tests", "/practices", "/programs", "/guides", "/books", "/about", "/faq", "/contacts"].map((p) => ({ url: u(p) })),
+    ...c.articles.map((a) => ({ url: u(`/library/${a.slug}`), lastModified: a.updated ?? a.date })),
+    ...c.tests.map((t) => ({ url: u(`/tests/${t.slug}`) })),
+    ...c.practices.map((p) => ({ url: u(`/practices/${p.slug}`) })),
+    ...c.programs.map((p) => ({ url: u(`/programs/${p.slug}`) })),
+    ...c.guides.map((g) => ({ url: u(`/guides/${g.slug}`) })),
+    ...c.topics.map((t) => ({ url: u(`/topics/${t.slug}`) })),
+    ...c.pages.filter((p) => p.slug.startsWith("legal-")).map((p) => ({ url: u(`/legal/${p.slug.slice(6)}`) })),
   ];
 }

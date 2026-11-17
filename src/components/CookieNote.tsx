@@ -11,7 +11,7 @@ export function CookieNote() {
   if (!show) return null;
   return (
     <div className="cookie-note" role="region" aria-label="Уведомление о cookie">
-      <span>Мы используем только технически необходимые cookie (вход в аккаунт) и не подключаем стороннюю аналитику. <Link href="/legal/cookies">Подробнее</Link></span>
+      <span>Сайт не использует cookie и аналитику. Ваши записи хранятся только в этом браузере. <Link href="/legal/cookies">Подробнее</Link></span>
       <button className="btn btn--secondary btn--sm" onClick={() => { try { localStorage.setItem("insida-cookie-note", "1"); } catch {} setShow(false); }}>Понятно</button>
     </div>
   );

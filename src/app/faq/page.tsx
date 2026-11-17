@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { listFaq } from "@/server/services/content";
+import { content } from "@/lib/content";
 import { renderMarkdown, markdownToPlain } from "@/lib/markdown";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-export const metadata: Metadata = { title: "Вопросы и ответы", alternates: { canonical: "/faq" } };
-export const revalidate = 300;
+export const metadata: Metadata = { title: "Вопросы и ответы", alternates: { canonical: "/faq/" } };
 
-export default async function Faq() {
-  const items = await listFaq();
+export default function Faq() {
+  const items = content().faq;
   const jsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: items.map((i) => ({ "@type": "Question", name: i.question, acceptedAnswer: { "@type": "Answer", text: markdownToPlain(i.answer) } })) };
   return (
     <>
@@ -17,8 +16,8 @@ export default async function Faq() {
         <h1>Вопросы и ответы</h1>
       </header>
       <section className="container container--narrow" style={{ paddingBottom: "5rem" }}>
-        {items.map((i) => (
-          <details key={i.id} className="faq">
+        {items.map((i, n) => (
+          <details key={n} className="faq">
             <summary>{i.question}</summary>
             <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(i.answer) }} />
           </details>

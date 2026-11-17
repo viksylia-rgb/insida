@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { PracticeField } from "@/server/schema";
+export type PracticeField = { id: string; label: string; type: "text" | "textarea" | "scale"; help?: string; min?: number; max?: number };
 import { removeEntry, saveEntry } from "@/lib/local-store";
 import { useLocalData } from "@/components/useLocalData";
 

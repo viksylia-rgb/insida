@@ -1,5 +1,5 @@
-import Image from "next/image";
 import type { CSSProperties } from "react";
+import { asset } from "@/lib/site";
 
 const PALETTES = [
   ["#c99fa7", "#49302f", "#efe2d6", "#2c1c1a"],
@@ -27,7 +27,8 @@ export function Visual({ src, alt = "", seed, ratio, glyph, priority, label = "Ð
   if (src) {
     return (
       <div className="visual" style={style}>
-        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} style={{ objectFit: "cover" }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset(src)} alt={alt} loading={priority ? "eager" : "lazy"} decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     );
   }
