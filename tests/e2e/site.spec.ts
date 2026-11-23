@@ -98,3 +98,24 @@ test("практика: черновик, избранное, прогресс �
   await page.getByRole("button", { name: "Да, удалить" }).click();
   await expect(page.getByText("Здесь пока пусто.")).toBeVisible();
 });
+
+test("опросник эмоциональной близости: подробный отчёт и режим безопасности", async ({ page }) => {
+  await page.goto("./tests/emotsionalnaya-blizost/");
+  await expect(page.locator(".ir-swatch")).toHaveCount(8);
+  await page.getByRole("button", { name: "Начать" }).click();
+  for (let i = 0; i < 40; i++) {
+    await page.locator(".option").nth(i % 5).click();
+    await page.getByRole("button", { name: i < 39 ? "Дальше" : "Узнать результат" }).click();
+  }
+  await expect(page.getByRole("heading", { name: "Общий показатель эмоциональной близости" })).toBeVisible();
+  for (const h of ["Пять персональных рекомендаций", "Три наиболее подходящих упражнения", "Индивидуальная программа на 14 дней", "Научные источники"]) {
+    await expect(page.getByRole("heading", { name: h })).toBeVisible();
+  }
+  await expect(page.locator(".ir-rec")).toHaveCount(5);
+  await expect(page.locator(".ir-ex")).toHaveCount(3);
+  await expect(page.locator(".ir-day")).toHaveCount(14);
+  await page.getByRole("button", { name: /Да, бывает/ }).click();
+  await expect(page.getByText("Ваша безопасность важнее упражнений.")).toBeVisible();
+  await expect(page.locator(".ir-ex .badge", { hasText: "вдвоём" })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+});

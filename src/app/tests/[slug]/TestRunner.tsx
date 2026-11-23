@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
 import { nextQuestion, scoreTest, ScoringError, sortQuestions, type EngineBand, type EngineQuestion, type EngineScale, type ScaleResult } from "@/lib/scoring";
 import { addTestResult } from "@/lib/local-store";
@@ -7,10 +8,12 @@ import { useLocalData } from "@/components/useLocalData";
 import { CrisisNote } from "@/components/Notices";
 
 type Q = EngineQuestion & { hint?: string | null };
+// Расширенный отчёт загружается отдельным фрагментом только после завершения теста.
+const IntimacyReport = dynamic(() => import("./IntimacyReport"), { ssr: false, loading: () => <p className="muted" role="status">Готовим подробный отчёт…</p> });
 const LINK_LABEL: Record<string, string> = { library: "Материал", practices: "Практика", tests: "Тест", programs: "Программа", guides: "Гайд" };
 
-export function TestRunner({ test, questions, scales, bands, linkTitles, crisisText }: {
-  test: { id: string; slug: string; title: string }; questions: Q[]; scales: EngineScale[]; bands: EngineBand[]; linkTitles: Record<string, string>; crisisText: string;
+export function TestRunner({ test, questions, scales, bands, linkTitles, crisisText, report }: {
+  test: { id: string; slug: string; title: string }; questions: Q[]; scales: EngineScale[]; bands: EngineBand[]; linkTitles: Record<string, string>; crisisText: string; report?: string;
 }) {
   const sorted = useMemo(() => sortQuestions(questions) as Q[], [questions]);
   const { update } = useLocalData();
@@ -67,6 +70,30 @@ export function TestRunner({ test, questions, scales, bands, linkTitles, crisisT
   function restart() { setAnswers({}); setHistory([sorted[0].id]); setResult(null); setSaved("no"); setStarted(true); }
 
   if (!sorted.length) return <div className="empty">В тесте пока нет вопросов.</div>;
+
+  const savedNote = (
+    <p className="small" role="status">
+      {saved === "yes" ? <>Результат сохранён только на этом устройстве — в разделе <Link href="/account">«Мои записи»</Link>. Его можно удалить в любой момент.</>
+        : saved === "failed" ? "Браузер не разрешил сохранение (например, в приватном режиме). Результат виден только сейчас."
+        : "Результат нигде не сохранён."}
+    </p>
+  );
+
+  if (result && report === "emotional-intimacy") {
+    return (
+      <section id="test-result" tabIndex={-1} aria-labelledby="res-h" className="quiz quiz--wide">
+        <p className="eyebrow">Ваш результат</p>
+        <h2 id="res-h">Личный отчёт об эмоциональной близости</h2>
+        <p className="muted">Отчёт описывает ваше восприятие отношений за последние четыре недели. Это не оценка личности, не оценка партнёра и не заключение о будущем отношений. Если что-то отозвалось — это повод для размышления или разговора со специалистом.</p>
+        <IntimacyReport scores={Object.fromEntries(result.map((r) => [r.key, r.score]))} crisisText={crisisText} />
+        {savedNote}
+        <div className="cluster no-print" style={{ marginTop: "1.5rem" }}>
+          <button className="btn btn--secondary" onClick={restart}>Пройти ещё раз</button>
+          <Link className="btn btn--ghost" href="/tests">Другие тесты</Link>
+        </div>
+      </section>
+    );
+  }
 
   if (result) {
     const high = result.some((r) => r.percent >= 75);

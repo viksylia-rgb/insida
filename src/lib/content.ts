@@ -62,6 +62,8 @@ const testS = z.object({
   date,
   cover: optStr,
   methodNote: optStr.transform((v) => v ?? ""),
+  /** Вид расширенного отчёта. Пусто — стандартный результат по шкалам. */
+  report: z.enum(["emotional-intimacy"]).optional().nullable().transform((v) => v ?? undefined),
   sources,
   scales: z.array(z.object({ key: str.regex(/^[a-z][a-z0-9_]*$/, "ключ шкалы — латиницей"), title: str.min(1) })).min(1),
   questions: z

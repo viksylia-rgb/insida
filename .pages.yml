@@ -149,6 +149,7 @@ content:
           - { name: recommendations, label: "Что можно попробовать", type: text }
           - { name: links, label: "Ссылки (library/адрес, practices/адрес)", type: string, list: true }
       - { name: methodNote, label: "Как устроен опросник", type: text }
+      - { name: report, label: "Расширенный отчёт (не менять у готовых тестов)", type: select, options: { values: ["", "emotional-intimacy"] } }
       - name: sources
         label: Источники
         type: object

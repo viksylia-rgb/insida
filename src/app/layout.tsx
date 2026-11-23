@@ -10,6 +10,7 @@ import "@fontsource/manrope/700.css";
 import "@/styles/tokens.css";
 import "@/styles/base.css";
 import "@/styles/components.css";
+import "@/styles/report.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieNote } from "@/components/CookieNote";
@@ -32,8 +33,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4eae0" },
-    { media: "(prefers-color-scheme: dark)", color: "#2c1c1a" },
+    { media: "(prefers-color-scheme: light)", color: "#fffbf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#232a18" },
   ],
 };
 

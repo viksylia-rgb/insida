@@ -7,6 +7,8 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { DemoBadge, Disclaimer } from "@/components/Notices";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { TestRunner } from "./TestRunner";
+import { ScaleSwatches } from "@/components/intimacy/Charts";
+import { SCALES as INTIMACY_SCALES } from "@/lib/intimacy/report";
 
 type P = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
@@ -36,10 +38,16 @@ export default async function TestPage({ params }: P) {
         {t.excerpt && <p className="lead">{t.excerpt}</p>}
         <FavoriteButton type="test" id={t.slug} title={t.title} url={`/tests/${t.slug}`} />
       </header>
-      <section className="container container--narrow" style={{ paddingBottom: "5rem" }}>
+      <section className={`container${t.report ? " container--report" : " container--narrow"}`} style={{ paddingBottom: "5rem" }}>
         {t.intro && <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(t.intro) }} />}
+        {t.report === "emotional-intimacy" && (
+          <div style={{ marginTop: "2rem" }}>
+            <p className="eyebrow">Восемь шкал опросника</p>
+            <ScaleSwatches items={INTIMACY_SCALES.map((s) => ({ key: s.key, title: s.title, text: s.measures }))} />
+          </div>
+        )}
         <div style={{ margin: "2rem 0" }}><Disclaimer kind="test" /></div>
-        <TestRunner test={{ id: t.slug, slug: t.slug, title: t.title }} questions={questions} scales={t.engine.scales} bands={t.engine.bands} linkTitles={linkTitles(t.results.flatMap((r) => r.links))} crisisText={c.settings.crisisText} />
+        <TestRunner test={{ id: t.slug, slug: t.slug, title: t.title }} questions={questions} scales={t.engine.scales} bands={t.engine.bands} linkTitles={linkTitles(t.results.flatMap((r) => r.links))} crisisText={c.settings.crisisText} report={t.report} />
         {(t.methodNote || t.sources.length > 0) && (
           <details className="faq" style={{ marginTop: "3rem" }}>
             <summary>Как устроен этот опросник</summary>

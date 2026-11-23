@@ -3,20 +3,26 @@
    Все цвета, шрифты, отступы и радиусы меняются ТОЛЬКО здесь.
    ========================================================================== */
 :root {
-  /* --- Базовая палитра (утверждённые HEX) --- */
-  --c-chocolate: #2c1c1a;      /* Основной шоколад */
-  --c-chocolate-2: #49302f;    /* Шоколад светлее */
-  --c-rose: #c99fa7;           /* Пыльная роза */
-  --c-rose-deep: #a87580;      /* Роза насыщенная — для декоративных акцентов */
-  --c-rose-text: #8a5562;      /* Роза для ТЕКСТА на светлом фоне (контраст 4.97:1, WCAG AA) */
-  --c-cream: #f4eae0;          /* Кремовый */
-  --c-paper: #faf6f1;          /* Светлая бумага */
-  --c-ink: #2c1c1a;            /* Основной текст */
-  --c-ink-2: #6c5754;          /* Вторичный текст (5.65:1) */
-  --c-light: #f7f0e9;          /* Светлый текст на шоколаде */
-  --c-line: #d9c9bf;           /* Линии / разделители (декоративные) */
-  --c-error: #a93f49;
-  --c-success: #356b56;
+  /* --- Базовая палитра (утверждённые HEX, ноябрь 2026) --- */
+  --c-pink: #f6d5dd;           /* Светло-розовый — мягкие акценты, плашки */
+  --c-olive: #7e9158;          /* Оливковый — графика, декоративные акценты (не для мелкого текста) */
+  --c-olive-text: #56663a;     /* Оливковый для ТЕКСТА на светлом фоне (6.08:1, WCAG AA) */
+  --c-cream: #fffbf8;          /* Кремовый (айвори) — фон */
+  --c-beige: #d7c8bc;          /* Бежевый — линии, подложки */
+  --c-dark-olive: #3f4a2d;     /* Тёмно-оливковый — цвет текста (9.16:1) */
+  --c-ink: #3f4a2d;            /* Основной текст */
+  --c-ink-2: #5f6b4e;          /* Вторичный текст (5.52:1) */
+  --c-light: #fffbf8;          /* Светлый текст на тёмно-оливковом */
+  --c-line: #e6dbd2;           /* Линии / разделители (декоративные) */
+  --c-error: #9c3a4e;          /* 6.52:1 */
+  --c-success: #3d6b47;        /* 6.02:1 */
+
+  /* Совместимость со старыми именами (используются в стилях компонентов) */
+  --c-chocolate: var(--c-dark-olive);
+  --c-chocolate-2: #4d5a37;
+  --c-rose: var(--c-pink);
+  --c-rose-deep: var(--c-olive);
+  --c-rose-text: var(--c-olive-text);
 
   /* --- Типографика --- */
   --font-display: "Cormorant Garamond", "Cormorant", "Playfair Display", Georgia, "Times New Roman", serif;
@@ -64,52 +70,76 @@
 [data-theme="light"] {
   color-scheme: light;
   --bg: var(--c-cream);
-  --surface: var(--c-paper);
-  --surface-2: #efe2d6;
+  --surface: #ffffff;
+  --surface-2: #f6efe9;
   --text: var(--c-ink);
   --text-2: var(--c-ink-2);
-  --accent: var(--c-rose-deep);
-  --accent-text: var(--c-rose-text);
-  --accent-soft: #ead6d4;
+  --accent: var(--c-olive);
+  --accent-text: var(--c-olive-text);
+  --accent-soft: var(--c-pink);
   --line: var(--c-line);
-  --line-strong: #b9a59b;
-  --btn-bg: var(--c-chocolate);
+  --line-strong: var(--c-beige);
+  --btn-bg: var(--c-dark-olive);
   --btn-text: var(--c-light);
-  --btn-hover: #46302d;
-  --inverse-bg: var(--c-chocolate);
-  --inverse-surface: var(--c-chocolate-2);
+  --btn-hover: var(--c-olive-text);
+  --inverse-bg: var(--c-dark-olive);
+  --inverse-surface: #4d5a37;
   --inverse-text: var(--c-light);
-  --inverse-text-2: #d4bdb6;
-  --inverse-accent: var(--c-rose);
+  --inverse-text-2: #e2dccf;
+  --inverse-accent: var(--c-pink);
   --error: var(--c-error);
   --success: var(--c-success);
-  --focus: #6b3a46;
-  --shadow: 0 1px 2px rgb(44 28 26 / 0.06), 0 8px 24px -12px rgb(44 28 26 / 0.18);
+  --focus: #56663a;
+  --shadow: 0 1px 2px rgb(63 74 45 / 0.06), 0 8px 24px -12px rgb(63 74 45 / 0.18);
+
+  /* Инфографика */
+  --viz-1: var(--c-olive);
+  --viz-2: var(--c-pink);
+  --viz-3: var(--c-beige);
+  --viz-4: var(--c-dark-olive);
+  --viz-track: #f1e9e2;
+  --viz-low: #ecc3cd;
+  --viz-mid: var(--c-beige);
+  --viz-high: var(--c-olive);
+  /* Оливковые плашки с текстом (контраст AA) */
+  --olive-solid: var(--c-olive-text);
+  --on-olive-solid: #ffffff;
 }
 
 /* --- Тёмная тема --- */
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: var(--c-chocolate);
-  --surface: var(--c-chocolate-2);
-  --surface-2: #3a2624;
+  --bg: #232a18;
+  --surface: #2d3520;
+  --surface-2: #374029;
   --text: var(--c-light);
-  --text-2: #d4bdb6;          /* 9.1:1 на шоколаде */
-  --accent: var(--c-rose);
-  --accent-text: var(--c-rose); /* 6.99:1 */
-  --accent-soft: #5a3a3c;
-  --line: #5e4442;
-  --line-strong: #7d605c;
-  --btn-bg: var(--c-light);
-  --btn-text: var(--c-chocolate);
+  --text-2: #c9c2b4;          /* 8.4:1 */
+  --accent: #b9cc93;
+  --accent-text: #b9cc93;     /* 8.6:1 */
+  --accent-soft: #4a4136;
+  --line: #414b30;
+  --line-strong: #5b6747;
+  --btn-bg: var(--c-pink);
+  --btn-text: #232a18;
   --btn-hover: #ffffff;
   --inverse-bg: var(--c-cream);
-  --inverse-surface: var(--c-paper);
+  --inverse-surface: #f6efe9;
   --inverse-text: var(--c-ink);
   --inverse-text-2: var(--c-ink-2);
-  --inverse-accent: var(--c-rose-text);
-  --error: #ec9aa2;
-  --success: #94c9b2;
-  --focus: #f0c7ce;
+  --inverse-accent: var(--c-olive-text);
+  --error: #f0a7b6;
+  --success: #b9cc93;
+  --focus: var(--c-pink);
   --shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 10px 30px -14px rgb(0 0 0 / 0.5);
+
+  --viz-1: #b9cc93;
+  --viz-2: var(--c-pink);
+  --viz-3: #8f8577;
+  --viz-4: var(--c-cream);
+  --viz-track: #374029;
+  --viz-low: #c98e9c;
+  --viz-mid: #8f8577;
+  --viz-high: #b9cc93;
+  --olive-solid: #b9cc93;
+  --on-olive-solid: #232a18;
 }
