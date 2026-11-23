@@ -71,7 +71,7 @@
   color-scheme: light;
   --bg: var(--c-cream);
   --surface: #ffffff;
-  --surface-2: #f6efe9;
+  --surface-2: #f8efec;
   --text: var(--c-ink);
   --text-2: var(--c-ink-2);
   --accent: var(--c-olive);
@@ -79,14 +79,16 @@
   --accent-soft: var(--c-pink);
   --line: var(--c-line);
   --line-strong: var(--c-beige);
-  --btn-bg: var(--c-dark-olive);
-  --btn-text: var(--c-light);
-  --btn-hover: var(--c-olive-text);
-  --inverse-bg: var(--c-dark-olive);
-  --inverse-surface: #4d5a37;
-  --inverse-text: var(--c-light);
-  --inverse-text-2: #e2dccf;
-  --inverse-accent: var(--c-pink);
+  --btn-bg: var(--c-pink);
+  --btn-text: var(--c-dark-olive);
+  --btn-hover: #efc3ce;
+  /* «Акцентные» секции — светло-розовые, а не тёмные */
+  --inverse-bg: var(--c-pink);
+  --inverse-surface: #fbeaee;
+  --inverse-text: var(--c-dark-olive);
+  --inverse-text-2: #4d5a37;
+  --inverse-accent: #4d5a37;
+  --footer-bg: var(--c-beige);
   --error: var(--c-error);
   --success: var(--c-success);
   --focus: #56663a;
@@ -104,6 +106,7 @@
   /* Оливковые плашки с текстом (контраст AA) */
   --olive-solid: var(--c-olive-text);
   --on-olive-solid: #ffffff;
+  --olive-soft: #e3ead4;
 }
 
 /* --- Тёмная тема --- */
@@ -127,6 +130,7 @@
   --inverse-text: var(--c-ink);
   --inverse-text-2: var(--c-ink-2);
   --inverse-accent: var(--c-olive-text);
+  --footer-bg: #1b2112;
   --error: #f0a7b6;
   --success: #b9cc93;
   --focus: var(--c-pink);
@@ -142,4 +146,5 @@
   --viz-high: #b9cc93;
   --olive-solid: #b9cc93;
   --on-olive-solid: #232a18;
+  --olive-soft: #414b30;
 }

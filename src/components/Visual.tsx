@@ -2,12 +2,12 @@ import type { CSSProperties } from "react";
 import { asset } from "@/lib/site";
 
 const PALETTES = [
-  ["#f6d5dd", "#7e9158", "#fffbf8", "#3f4a2d"],
-  ["#d7c8bc", "#3f4a2d", "#f6d5dd", "#7e9158"],
-  ["#7e9158", "#fffbf8", "#d7c8bc", "#3f4a2d"],
-  ["#fffbf8", "#7e9158", "#f6d5dd", "#56663a"],
-  ["#3f4a2d", "#f6d5dd", "#fffbf8", "#7e9158"],
-  ["#f6d5dd", "#d7c8bc", "#fffbf8", "#7e9158"],
+  ["#f6d5dd", "#d7c8bc", "#fffbf8", "#e9b9c5"],
+  ["#fffbf8", "#f6d5dd", "#efe4dc", "#d7c8bc"],
+  ["#d7c8bc", "#f6d5dd", "#fffbf8", "#c9b4a6"],
+  ["#f6d5dd", "#b8c49b", "#fffbf8", "#ecc6cf"],
+  ["#efe4dc", "#f6d5dd", "#fffbf8", "#d7c8bc"],
+  ["#fbeaee", "#d7c8bc", "#f6d5dd", "#c7a9b1"],
 ];
 
 function hash(s: string) {

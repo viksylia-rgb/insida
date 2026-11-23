@@ -4,6 +4,7 @@ import { content, toCard } from "@/lib/content";
 import { markdownToPlain } from "@/lib/markdown";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryBrowser } from "./LibraryBrowser";
+import { ShareBar, StepsFlow } from "@/components/Infographics";
 
 export const metadata: Metadata = {
   title: "Библиотека",
@@ -24,6 +25,24 @@ export default function Library() {
         <p className="lead">Статьи, объяснения терминов и подборки. Каждый материал — с источниками, датой обновления и отметкой о редакторской проверке.</p>
       </header>
       <section className="container" style={{ paddingBottom: "5rem" }}>
+        <div className="infogrid">
+          <div className="infobox">
+            <p className="infobox__title">Что есть в библиотеке</p>
+            <ShareBar label="Доли форматов" items={[
+              { label: "Статьи", value: c.articles.filter((a) => a.kind === "article").length, tone: "pink", href: "/library?kind=article" },
+              { label: "Термины", value: c.articles.filter((a) => a.kind === "term").length, tone: "beige", href: "/library?kind=term" },
+              { label: "Подборки", value: c.articles.filter((a) => a.kind === "collection").length, tone: "olive", href: "/library?kind=collection" },
+            ]} />
+          </div>
+          <div className="infobox">
+            <p className="infobox__title">Как устроен каждый материал</p>
+            <StepsFlow label="Из чего состоит материал" steps={[
+              { title: "Источники", text: "Книги и исследования, на которые опирается текст", tone: "pink" },
+              { title: "Дата", text: "Когда материал обновлялся", tone: "cream" },
+              { title: "Проверка", text: "Отметка о редакторской проверке", tone: "olive" },
+            ]} />
+          </div>
+        </div>
         <Suspense fallback={<p className="muted">Загружаю материалы…</p>}>
           <LibraryBrowser items={items} topics={c.topics.map((t) => ({ slug: t.slug, title: t.title }))} tags={tags} />
         </Suspense>

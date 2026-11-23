@@ -5,6 +5,7 @@ import { Visual } from "@/components/Visual";
 import { DemoBadge, Disclaimer } from "@/components/Notices";
 import { KIND_LABELS, minutes, plural } from "@/lib/format";
 import { SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
+import { PaletteStats, TopicMap } from "@/components/Infographics";
 
 export default function Home() {
   const c = content();
@@ -84,18 +85,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------- INSIDA В ЦИФРАХ ---------- */}
+      <section className="section--tight container" aria-labelledby="stats-h">
+        <div className="infobox">
+          <p className="infobox__title" id="stats-h">INSIDA в цифрах</p>
+          <PaletteStats label="Сколько материалов на сайте" items={[
+            { value: c.articles.filter((a) => a.kind === "article").length, label: "Статей", sub: "с источниками", href: "/library?kind=article", tone: "pink" },
+            { value: c.tests.length, label: "Тестов", sub: "без диагнозов и ярлыков", href: "/tests", tone: "olive" },
+            { value: c.practices.length, label: "Практик", sub: "с автосохранением", href: "/practices", tone: "cream" },
+            { value: c.programs.length, label: "Программ", sub: "уроки шаг за шагом", href: "/programs", tone: "beige" },
+            { value: c.books.length, label: "Книг", sub: "на книжной полке", href: "/books", tone: "blush" },
+          ]} />
+        </div>
+      </section>
+
       {/* ---------- ТЕМЫ ---------- */}
       <section className="section container" aria-labelledby="topics-h">
         <div className="section-head"><div><p className="eyebrow">Темы</p><h2 id="topics-h">О чём мы пишем</h2></div></div>
-        <div className="topic-grid">
-          {topics.map((t, i) => (
-            <div key={t.slug} className="topic-tile">
-              <span className="topic-tile__n">{String(i + 1).padStart(2, "0")}</span>
-              <h3><Link href={`/topics/${t.slug}`}>{t.title}</Link></h3>
-              {t.description && <p>{t.description}</p>}
-            </div>
-          ))}
-        </div>
+        <TopicMap items={topics.map((t) => ({
+          slug: t.slug, title: t.title, text: t.description,
+          counts: [
+            { label: "Статьи", value: c.articles.filter((x) => x.topic === t.slug).length, tone: "pink" as const },
+            { label: "Тесты", value: c.tests.filter((x) => x.topic === t.slug).length, tone: "olive" as const },
+            { label: "Практики", value: c.practices.filter((x) => x.topic === t.slug).length, tone: "beige" as const },
+          ],
+        }))} />
       </section>
 
       {/* ---------- ФОРМАТЫ ---------- */}
